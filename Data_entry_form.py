@@ -1,34 +1,44 @@
 import tkinter
-from tkinter import ttk #themed widgets 
+from tkinter import ttk
 from tkinter import messagebox
 
+import csv
+import os
+
+
 def enter_data():
-    accepted = accept_var.get()
+    # User info
+    firstname = first_name_entry.get()
+    lastname = last_name_entry.get()
+    title = title_combobox.get()
+    age = age_spinbox.get()
+    nationality = nationality_combobox.get()
+    gender = gender_combobox.get()
     
-    if accepted=="Accepted":
-        # User info
-        firstname = first_name_entry.get()
-        lastname = last_name_entry.get()
+    # Address info
+    address = address_entry.get()
+    county = county_entry.get()
+    state = state_combobox.get()
+    zipcode = zip_code_entry.get()
+
+    if firstname and lastname:
+        data = [firstname, lastname, title, age, gender, nationality, address, county, state, zipcode]
+
+        file_exists = os.path.isfile('form_data.csv') #path of where to save csv file
         
-        if firstname and lastname:
-            title = title_combobox.get()
-            age = age_spinbox.get()
-            nationality = nationality_combobox.get()
-            
-            # Course info
-            registration_status = reg_status_var.get()
-            numcourses = numcourses_spinbox.get()
-            numsemesters = numsemesters_spinbox.get()
-            
-            print("First name: ", firstname, "Last name: ", lastname)
-            print("Title: ", title, "Age: ", age, "Nationality: ", nationality)
-            print("# Courses: ", numcourses, "Semesters: ", numsemesters)
-            print("Registration status", registration_status)
-            print("------------------------------------------")
-        else:
-            tkinter.messagebox.showwarning(title="Error", message="First name and last name are required.")
+        with open('form_data.csv', 'a', newline='') as file:
+            writer = csv.writer(file)
+            if not file_exists:
+                # Write header if file doesn't exist
+                writer.writerow(["First Name", "Last Name", "Title", "Age", "Gender", "Nationality",
+                                 "Address", "County", "State", "Zip Code"])
+            writer.writerow(data)
+
+        messagebox.showinfo("Success", "Data saved successfully.")
+        print("Data saved to form_data.csv")
+        print("-" * 50)
     else:
-        tkinter.messagebox.showwarning(title= "Error", message="You have not accepted the terms.")
+        messagebox.showwarning(title="Error", message="First name and last name are required.")
 
 window = tkinter.Tk()
 window.title("Data Entry Form")
@@ -36,33 +46,34 @@ window.title("Data Entry Form")
 frame = tkinter.Frame(window)
 frame.pack()
 
-# Saving User Info
-user_info_frame =tkinter.LabelFrame(frame, text="User Information")
-user_info_frame.grid(row= 0, column=0, padx=20, pady=10)
+# User Info
+user_info_frame = tkinter.LabelFrame(frame, text="User Information")
+user_info_frame.grid(row=0, column=0, padx=20, pady=10)
 
 first_name_label = tkinter.Label(user_info_frame, text="First Name")
 first_name_label.grid(row=0, column=0)
+first_name_entry = tkinter.Entry(user_info_frame)
+first_name_entry.grid(row=1, column=0)
+
 last_name_label = tkinter.Label(user_info_frame, text="Last Name")
 last_name_label.grid(row=0, column=1)
-
-first_name_entry = tkinter.Entry(user_info_frame)
 last_name_entry = tkinter.Entry(user_info_frame)
-first_name_entry.grid(row=1, column=0)
 last_name_entry.grid(row=1, column=1)
 
 title_label = tkinter.Label(user_info_frame, text="Title")
-title_combobox = ttk.Combobox(user_info_frame, values=["", "Mr.", "Ms.", "Miss", "Dr."])
-title_label.grid(row=0, column=2)
+title_combobox = ttk.Combobox(user_info_frame, values=["Mr.", "Ms.", "Miss", "Dr."])
+title_combobox.current(0)
 title_combobox.grid(row=1, column=2)
+title_label.grid(row=0, column=2)
 
 age_label = tkinter.Label(user_info_frame, text="Age")
-age_spinbox = tkinter.Spinbox(user_info_frame, from_=0, to=120)
 age_label.grid(row=2, column=0)
+age_spinbox = tkinter.Spinbox(user_info_frame, from_=0, to=120)
 age_spinbox.grid(row=3, column=0)
 
 nationality_label = tkinter.Label(user_info_frame, text="Nationality")
-nationality_combobox = ttk.Combobox(user_info_frame, values=[
-    "Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguan",
+nationality_label.grid(row=2, column=1)
+nationality_combobox = ttk.Combobox(user_info_frame, values=["Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguan",
     "Argentine", "Armenian", "Australian", "Austrian", "Azerbaijani", "Bahamian", "Bahraini",
     "Bangladeshi", "Barbadian", "Belarusian", "Belgian", "Belizean", "Beninese", "Bhutanese",
     "Bolivian", "Bosnian", "Botswanan", "Brazilian", "British", "Bruneian", "Bulgarian",
@@ -89,51 +100,55 @@ nationality_combobox = ttk.Combobox(user_info_frame, values=[
     "Sri Lankan", "Sudanese", "Surinamese", "Swazi", "Swedish", "Swiss", "Syrian", "Taiwanese",
     "Tajik", "Tanzanian", "Thai", "Togolese", "Tongan", "Trinidadian", "Tunisian", "Turkish",
     "Turkmen", "Tuvaluan", "Ugandan", "Ukrainian", "Uruguayan", "Uzbek", "Vanuatuan",
-    "Venezuelan", "Vietnamese", "Welsh", "Yemeni", "Zambian", "Zimbabwean" ""])
-nationality_label.grid(row=2, column=1)
+    "Venezuelan", "Vietnamese", "Welsh", "Yemeni", "Zambian", "Zimbabwean",""])
 nationality_combobox.grid(row=3, column=1)
 
 gender_label = tkinter.Label(user_info_frame, text="Gender")
-gender_combobox = ttk.Combobox(user_info_frame, values=["Male", "Female", "Prefer not say."])
 gender_label.grid(row=2, column=2)
+gender_combobox = ttk.Combobox(user_info_frame, values=["Male", "Female", "Prefer not to say"])
 gender_combobox.grid(row=3, column=2)
 
 for widget in user_info_frame.winfo_children():
     widget.grid_configure(padx=10, pady=5)
 
-# Saving Course Info
-courses_frame = tkinter.LabelFrame(frame)
-courses_frame.grid(row=1, column=0, sticky="news", padx=20, pady=10)
+# Address Info
+address_frame = tkinter.LabelFrame(frame, text="Address Information")
+address_frame.grid(row=1, column=0, sticky="news", padx=20, pady=10)
 
-address_label = tkinter.Label(courses_frame, text="Address")
+address_label = tkinter.Label(address_frame, text="Address")
 address_label.grid(row=0, column=0)
-address_entry = tkinter.Entry(courses_frame, width=30)
+address_entry = tkinter.Entry(address_frame)
 address_entry.grid(row=1, column=0)
 
-county_label = tkinter.Label(courses_frame, text="County")
+county_label = tkinter.Label(address_frame, text="County")
 county_label.grid(row=0, column=1)
-county_entry = tkinter.Entry(courses_frame)
+county_entry = tkinter.Entry(address_frame)
 county_entry.grid(row=1, column=1)
 
-zip_code_label = tkinter.Label(courses_frame, text="Zip Code")
-zip_code_label.grid(row=0, column=2)
-zip_code_entry = tkinter.Entry(courses_frame)
-zip_code_entry.grid(row=1,column=2)
+state_label = tkinter.Label(address_frame, text="State")
+state_label.grid(row=2, column=0)
+state_combobox = ttk.Combobox(address_frame, values=[
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+    "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+    "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+    "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
+    "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
+    "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+    "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
+    "Wisconsin", "Wyoming"
+])
+state_combobox.grid(row=3, column=0)
 
-for widget in courses_frame.winfo_children():
+zip_code_label = tkinter.Label(address_frame, text="Zip Code")
+zip_code_label.grid(row=2, column=1)
+zip_code_entry = tkinter.Entry(address_frame)
+zip_code_entry.grid(row=3, column=1)
+
+for widget in address_frame.winfo_children():
     widget.grid_configure(padx=10, pady=5)
 
-# Accept terms
-terms_frame = tkinter.LabelFrame(frame, text="Terms & Conditions")
-terms_frame.grid(row=2, column=0, sticky="news", padx=20, pady=10)
+# Submit Button
+button = tkinter.Button(frame, text="Enter data", command=enter_data)
+button.grid(row=2, column=0, sticky="news", padx=20, pady=10)
 
-accept_var = tkinter.StringVar(value="Not Accepted")
-terms_check = tkinter.Checkbutton(terms_frame, text= "I accept the terms and conditions.",
-                                  variable=accept_var, onvalue="Accepted", offvalue="Not Accepted")
-terms_check.grid(row=0, column=0)
-
-# Button
-button = tkinter.Button(frame, text="Enter data", command= enter_data)
-button.grid(row=3, column=0, sticky="news", padx=20, pady=10)
- 
 window.mainloop()
