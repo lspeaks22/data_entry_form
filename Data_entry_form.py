@@ -7,7 +7,7 @@ import os
 
 
 def enter_data():
-    # User info
+    # User info get
     firstname = first_name_entry.get()
     lastname = last_name_entry.get()
     title = title_combobox.get()
@@ -15,7 +15,7 @@ def enter_data():
     nationality = nationality_combobox.get()
     gender = gender_combobox.get()
     
-    # Address info
+    # Address info get
     address = address_entry.get()
     county = county_entry.get()
     state = state_combobox.get()
